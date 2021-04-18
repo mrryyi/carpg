@@ -189,7 +189,6 @@ public:
         for (auto const& slot : _slots) {
          
             if (slot.second != nullptr) {
-            std::cout << "HEYYYYYY" << std::endl;
                 for (auto stat : slot.second->Stats()) {
                     if (!countedStats.count(stat.Name()))
                         countedStats.insert(std::pair<std::string, double>(stat.Name(), stat.Value()));
@@ -463,10 +462,11 @@ int main()
 
     EquipmentInventoryFace::Equip(&inventory, &equipment, &excalibur, "righthand");
     EquipmentInventoryFace::Equip(&inventory, &equipment, &excalibur2, "lefthand");
-    EquipmentInventoryFace::UnEquip(&inventory, &equipment, "righthand");
-    EquipmentInventoryFace::UnEquip(&inventory, &equipment, "lefthand");
+    //EquipmentInventoryFace::UnEquip(&inventory, &equipment, "righthand");
+    //EquipmentInventoryFace::UnEquip(&inventory, &equipment, "lefthand");
 
     Printer::PrintEquipment(&equipment);
     Printer::PrintInventory(&inventory);
     Printer::PrintEquipmentStats(&equipment);
+    //equipment.PrintItems();
 }
