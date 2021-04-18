@@ -3,6 +3,8 @@
 #include <map> // for map
 #include <string> // for to_string
 #include <iterator> // for back_inserter
+#include <stdlib.h> // srand, rand
+#include <time.h> // time
 
 #define List std::vector
 
@@ -227,21 +229,21 @@ namespace Generator {
 
     static double RandomNumberWithinRangeWithStep(double rangeMin, double rangeMax, double step)
     {
-
-        /*
-        // We are doing the times 100 thing because we don't want values like this: 0.60000000005
+        if (rangeMax < rangeMin) {
+            std::string error_message = "RandomNumberWithinRangeWithStep ERROR:";
+            error_message += "Max range: " + std::to_string(rangeMin) + " above min range." + std::to_string(rangeMin);
+            return 0.0;
+        }
+        
         rangeMin *= 100;
         rangeMax *= 100;
         step *= 100;
-        var randomGenerator = new Random();
 
-        var difference = rangeMax - rangeMin;
+        int difference = int( rangeMax - rangeMin );
+        int randomWithinDifference = rand() % difference;
+        double rounded = std::round((double) randomWithinDifference / step) * step;
 
-        var randomWithinDifference = randomGenerator.NextDouble() * difference;
-        var rounded = Math.Round((randomWithinDifference / step), MidpointRounding.AwayFromZero) * step;
-        var generatedNumber = (rounded + rangeMin) / 100;
-        */
-        double generatedNumber = 69.69;
+        double generatedNumber = (rounded + rangeMin) / 100;
         return generatedNumber;
     }
 
@@ -384,7 +386,7 @@ static class Printer
 public:
 
     static void PrintLine(std::string str) {
-        std::cout << (str) << std::endl;
+        std::cout << str << std::endl;
     }
 
     static std::string StatStringRepresentation(Stat stat) {
@@ -433,6 +435,7 @@ public:
 
 int main()
 {
+    srand(time(NULL));
     std::cout << "Hello World!\n";
     auto possibleStatsExcalibur = List<PossibleStat>();
     possibleStatsExcalibur.push_back(PossibleStat("strength", 500, 750, 1));
