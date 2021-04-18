@@ -5,8 +5,17 @@
 #include <iterator> // for back_inserter
 #include <stdlib.h> // srand, rand
 #include <time.h> // time
+#include <set>
+#include <unordered_set>
 
 #define List std::vector
+#define __DEBUGMODE__
+
+void debug_print(std::string origin, std::string message) {
+#ifdef __DEBUGMODE__
+    std::cout << "[DEBUG] ORIGIN: " << origin << ", " << message << std::endl;
+#endif
+}
 
 int next_session_item_id() {
     static int nextID = 0;
@@ -134,6 +143,7 @@ private:
 
 class Equipment
 {
+
 public:
     Equipment()
     {
@@ -156,13 +166,32 @@ public:
         _slots.insert(std::pair<std::string, Item*>("rightwrist", nullptr));
         _slots.insert(std::pair<std::string, Item*>("leftfoot", nullptr));
         _slots.insert(std::pair<std::string, Item*>("rightfoot", nullptr));
+
+        _slotMappings.insert(
+            {
+                { "hand", std::unordered_set<std::string> { "lefthand", "righthand" } },
+                { "ring", std::unordered_set<std::string> { "ring1", "ring2", "ring3", "ring4"} },
+                { "foot", std::unordered_set<std::string> { "leftfoot", "rightfoot"} },
+                { "wrist", std::unordered_set<std::string> { "leftwrist", "rightwrist" } }
+            }
+        );
+    }
+    
+    bool HasSlot(std::string slot) {
+        return _slots.count(slot) > 0;
+    }
+
+    bool HasItemInSlot(std::string slot) {
+        if (HasSlot(slot))
+            return _slots[slot] != nullptr;
+        else
+            return false;
     }
 
     bool EquipItem(std::string slot, Item* item_to_add)
     {
 
-        if (_slots.count(slot) && _slots[slot] == nullptr) // If slot exists and has no item in it.
-        {
+        if (ValidSlotForItem(slot, item_to_add)) {
             _slots[slot] = item_to_add;
             return true;
         }
@@ -172,17 +201,14 @@ public:
 
     Item* UnequipItem(std::string slot)
     {
-        if (_slots.count(slot) && _slots[slot] != nullptr) // If slot exists and has an item in it.
-        {
-
+        // If slot exists and has an item in it.
+        if (_slots.count(slot) && _slots[slot] != nullptr) {
             Item* returnItem = _slots[slot];
             _slots[slot] = nullptr;
             return returnItem;
         }
         else
-        {
             return nullptr;
-        }
     }
 
     List<Stat> CountStats() {
@@ -196,9 +222,9 @@ public:
                         countedStats.insert(std::pair<std::string, double>(stat.Name(), stat.Value()));
                     else
                         countedStats[stat.Name()] += stat.Value();
-                }
-            }
-        }
+                } // end for
+            } // end if
+        } // end for
 
         for (auto const& countedStat : countedStats) {
             std::cout << countedStat.first << ": " << countedStat.second << std::endl;
@@ -219,8 +245,38 @@ public:
 
     std::map<std::string, Item*> Slots() const { return _slots; }
 
+    bool ValidSlotForItem(std::string slot, Item* item_to_add) {
+
+        // if no such slot exists.
+        if (_slots.count(slot) < 1)
+            return false;
+
+        // if the item slot is a specific slot, for example "righthand" or "leftwrist"
+        if (slot == item_to_add->Slot()) {
+            return true;
+        }
+
+        // Check every slot possible for the overarching slot.
+        for (const auto& specificSlot : _slotMappings[item_to_add->Slot()]) {
+
+            if (specificSlot == slot) {
+                // The slot we want to equip exists for the items overarching slot.
+                // For example, we want to equip in the "righthand" and the item has slot "hand"
+                // We check _slotMappings.Map()["hand"] if "righthand" exists in it.
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 private:
     std::map<std::string, Item*> _slots;
+    
+    // "hand" items can be equipped in left or right hand.
+    // "ring" items can be equipped in ring1, ring2, ring3, or ring4.
+    // etc.
+    std::map<std::string, std::unordered_set<std::string>> _slotMappings;
 
 };
 
@@ -232,6 +288,10 @@ namespace Generator {
         if (rangeMax < rangeMin) {
             std::string error_message = "RandomNumberWithinRangeWithStep ERROR:";
             error_message += "Max range: " + std::to_string(rangeMin) + " above min range." + std::to_string(rangeMin);
+            debug_print("Generator:RandomNumberWithinRangeWithStep",
+                        "Max < min mismatch, min = " + std::to_string(rangeMin) +
+                        ", max = " + std::to_string(rangeMax));
+
             return 0.0;
         }
         
@@ -273,112 +333,65 @@ namespace Generator {
 
 };
 
-class StaticSlotMappings {
-public:
-    StaticSlotMappings() {
-        _slotMappings.insert(
-            {
-                { "hand", List<std::string>{ "lefthand","righthand" } },
-                { "ring", List<std::string> {"ring1","ring2","ring3","ring4"} },
-                { "foot", List<std::string> {"leftfoot","rightfoot"} },
-                { "wrist", List<std::string> { "leftwrist", "rightwrist" } }
-            }
-        );
-    }
-    std::map<std::string, List<std::string>> Map() const { return _slotMappings; }
-private:
-    std::map<std::string, List<std::string>> _slotMappings;
-};
-
+// Interface between equipment and inventory.
 namespace EquipmentInventoryFace
 {
-    static StaticSlotMappings _slotMappings;
 
-    // Wait, doesn't the item have a slot already?
-    // Well, here's the kicker, even if the slot is "hand", we need to declare which hand. :)
-    // Returns true if successful, returns false if unsuccessful.
-    // Unsuccessful if the wanted slot to equip in does not match with the items slot
-    static bool Equip(Inventory* inventory, Equipment* equipment, Item* item, std::string slot) {
+    static bool UnEquip(Inventory* inventory, Equipment* equipment, std::string slot) {
 
-        // if equipslot is not equal to item slot, return
-
-        // if slot is not equal to a mapp
-
-        equipment->EquipItem(slot, item);
-        inventory->RemoveItem(item);
-        return true;
-    }
-    /*
-    static bool Equip(Inventory inventory, Equipment equipment, Item* item, std::string slot) {
-
-        std::cout << "Trying to equip??" << std::endl;
-
-        if (!equipment.Slots().count(slot)) {
-            std::cout << "slot doesn't exist" << std::endl;
-
+        if (!equipment->HasSlot(slot)) {
+            debug_print("EquipmentInventoryFace:UnEquip", "UnEquip NOT successful, slot " + slot + " doesn't exist.");
+            return false;
+        }
+        if (equipment->Slots()[slot] == nullptr) {
+            debug_print("EquipmentInventoryFace:UnEquip", "UnEquip NOT successful, slot " + slot + " already empty.");
             return false;
         }
 
-        if (equipment.Slots()[slot] == nullptr) {
-            std::cout << slot << ": slot is nullptr" << std::endl;
-
-            if (_slotMappings.Map().count(item->Slot())) {
-                std::cout << "Slotmappings contains item slot " << std::endl;
-                for (auto const& mapping : _slotMappings.Map()) {
-                    std::cout << mapping.first << std::endl;
-                    for (auto const& specificSlot : mapping.second) {
-                        std::cout << "* " << specificSlot;
-                        if (specificSlot == slot) {
-
-                            equipment.EquipItem(slot, item);
-                            inventory.RemoveItem(item);
-                            std::cout << " <-- Equipping on this slot";
-
-                            std::cout << std::endl;
-                            return true;
-                        }
-                        std::cout << std::endl;
-                    }
-                }
-            }
-
-
-
-            for (auto specificSlot : _slotMappings.Map()[item->Slot()]) {
-                std::cout << "specific slot: " << specificSlot << std::endl;
-
-                if (slot == specificSlot) {
-                    std::cout << ("Equipping and removing" + item->Name()) << std::endl;
-                    equipment.EquipItem(slot, item);
-                    inventory.RemoveItem(item);
-                    return true;
-                }
-            }
-
-            // This is the case if the items slot is NOT a general slot like "hand"
-            // but rather a specific slot like  "righthand"
-
-            if (slot == item->Slot()) {
-                equipment.EquipItem(slot, item);
-                inventory.RemoveItem(item);
-                return true;
-            }
-        }
-
-        return false;
-    }
-    */
-
-    static bool UnEquip(Inventory* inventory, Equipment* equipment, std::string slot) {
-        if (equipment->Slots().count(slot) && equipment->Slots()[slot] != nullptr) // If slot exists and is not empty
-        {
-            Item* unequippedItem = equipment->UnequipItem(slot);
+        Item* unequippedItem = equipment->UnequipItem(slot);
+        if (unequippedItem != nullptr) {
             inventory->AddItem(unequippedItem);
+            debug_print("EquipmentInventoryFace:UnEquip", "UnEquip of slot " + slot + " successful, " + 
+                        "item " + unequippedItem->Name() + " now in inventory.");
             return true;
         }
 
+        debug_print("EquipmentInventoryFace:UnEquip", "UnEquip of slot " + slot + " NOT successful, reason unknown.");
         return false;
     }
+
+    static bool Equip(Inventory* inventory, Equipment* equipment, Item* item, std::string slot) {
+        
+        if (!equipment->HasSlot(slot)) {
+            debug_print("EquipmentInventoryFace:Equip", "Equip of item " + item->Name() + " NOT successful, equipment has no such slot: " + slot);
+            return false;
+        }
+         
+        if (equipment->ValidSlotForItem(slot, item) && equipment->HasItemInSlot(slot)) {
+            printf("GOT HERE\n");
+            debug_print("EquipmentInventoryFace:Equip", "Item already in slot, SWITCHING ITEMS, unequipping " + equipment->Slots()[slot]->Name() + " first.");
+            UnEquip(inventory, equipment, slot);
+
+            debug_print("EquipmentInventoryFace:Equip", "Equipping item " + item->Name() + " finally, recursively.");
+
+            // We are calling this function recursively, because now,
+            // the slot in the equipment has to be a nullptr because we unequipped it.
+            Equip(inventory, equipment, item, slot);
+
+            return true;
+        }
+
+        // If equipping was successful, remove from inventory.
+        if (equipment->EquipItem(slot, item)) {
+            inventory->RemoveItem(item);
+            debug_print("EquipmentInventoryFace:Equip", "Equip of item " + item->Name() + " in slot " + slot + " successful");
+            return true;
+        }
+
+        debug_print("EquipmentInventoryFace:Equip", "Equip of item " + item->Name() + " in slot " + slot + " NOT successful, reason unknown");
+        return false;
+    }
+
 };
 
 static class Printer
@@ -402,6 +415,7 @@ public:
     }
 
     static void PrintInventory(Inventory* inventory) {
+        PrintLine("-----------------------------");
         PrintLine("INVENTORY");
         for (auto item : inventory->Items()) {
             PrintLine(item->Name() + ':');
@@ -414,6 +428,7 @@ public:
     }
 
     static void PrintEquipment(Equipment* equipment) {
+        PrintLine("-----------------------------");
         PrintLine("EQUIPMENT");
         for (auto slot : equipment->Slots())
             if (slot.second != nullptr)
@@ -425,6 +440,7 @@ public:
     static void PrintEquipmentStats(Equipment* equipment) {
         auto countedStats = equipment->CountStats();
 
+        PrintLine("-----------------------------");
         PrintLine("EQUIPMENT STATS");
         for (auto countedStat : countedStats)
             PrintLine(countedStat.Name() + ':' + std::to_string(countedStat.Value()));
@@ -465,6 +481,7 @@ int main()
 
     EquipmentInventoryFace::Equip(&inventory, &equipment, &excalibur, "righthand");
     EquipmentInventoryFace::Equip(&inventory, &equipment, &excalibur2, "lefthand");
+    EquipmentInventoryFace::Equip(&inventory, &equipment, &thunderfury, "righthand");
     //EquipmentInventoryFace::UnEquip(&inventory, &equipment, "righthand");
     //EquipmentInventoryFace::UnEquip(&inventory, &equipment, "lefthand");
 
