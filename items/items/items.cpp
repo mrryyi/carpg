@@ -5,8 +5,7 @@
 #include <iterator> // for back_inserter
 #include <stdlib.h> // srand, rand
 #include <time.h> // time
-#include <set>
-#include <unordered_set>
+#include <unordered_set> // unordered_set
 
 #define List std::vector
 #define __DEBUGMODE__
@@ -475,7 +474,6 @@ int main()
     inventory.AddItem(&thunderfury);
 
     Printer::PrintInventory(&inventory);
-
 
     Equipment equipment = Equipment();
 
