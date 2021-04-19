@@ -3,7 +3,6 @@
 int main()
 {
     srand(time(NULL));
-    std::cout << "Hello World!\n";
     auto possibleStatsExcalibur = List<PossibleStat>();
     possibleStatsExcalibur.push_back(PossibleStat("strength", 500, 750, 1));
     possibleStatsExcalibur.push_back(PossibleStat("vitality", 500, 750, 1));
@@ -14,27 +13,23 @@ int main()
     possibleStatsThunderfury.push_back(PossibleStat("critchance", 5, 8, 0.5));
     auto possibleThunderfury = ItemBase("Thunderfury, blessed blade of the windseeker", possibleStatsThunderfury, "hand");
 
-    Item excalibur = Generator::GenerateItemWithBase(possibleExcalibur);
-    Item excalibur2 = Generator::GenerateItemWithBase(possibleExcalibur);
-    Item thunderfury = Generator::GenerateItemWithBase(possibleThunderfury);
+    ItemManager itemManager = ItemManager();
 
-    Inventory inventory = Inventory();
-    inventory.AddItem(&excalibur);
-    inventory.AddItem(&excalibur2);
-    inventory.AddItem(&thunderfury);
+    Item excalibur = itemManager.GetGenerator()->GenerateItemWithBase(possibleExcalibur);
+    Item excalibur2 = itemManager.GetGenerator()->GenerateItemWithBase(possibleExcalibur);
+    Item thunderfury = itemManager.GetGenerator()->GenerateItemWithBase(possibleThunderfury);
 
-    Printer::PrintInventory(&inventory);
+    itemManager.GetInventory()->AddItem(&excalibur);
+    itemManager.GetInventory()->AddItem(&excalibur2);
+    itemManager.GetInventory()->AddItem(&thunderfury);
 
-    Equipment equipment = Equipment();
+    Printer::PrintInventory(itemManager.GetInventory());
 
-    EquipmentInventoryFace::Equip(&inventory, &equipment, &excalibur, "righthand");
-    EquipmentInventoryFace::Equip(&inventory, &equipment, &excalibur2, "lefthand");
-    EquipmentInventoryFace::Equip(&inventory, &equipment, &thunderfury, "righthand");
-    //EquipmentInventoryFace::UnEquip(&inventory, &equipment, "righthand");
-    //EquipmentInventoryFace::UnEquip(&inventory, &equipment, "lefthand");
+    itemManager.EquipBySessionId(excalibur.SessionItemId(), "righthand");
+    itemManager.EquipBySessionId(excalibur2.SessionItemId(), "lefthand");
 
-    Printer::PrintEquipment(&equipment);
-    Printer::PrintInventory(&inventory);
-    Printer::PrintEquipmentStats(&equipment);
-    //equipment.PrintItems();
+    Printer::PrintEquipment(itemManager.GetEquipment());
+    Printer::PrintInventory(itemManager.GetInventory());
+    Printer::PrintEquipmentStats(itemManager.GetEquipment());
+
 }

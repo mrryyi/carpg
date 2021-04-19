@@ -4,8 +4,7 @@
 // Interface between equipment and inventory.
 namespace EquipmentInventoryFace
 {
-
-    static bool UnEquip(Inventory* inventory, Equipment* equipment, std::string slot) {
+    bool UnEquip(Inventory* inventory, Equipment* equipment, std::string slot) {
 
         if (!equipment->HasSlot(slot)) {
             debug_print("EquipmentInventoryFace:UnEquip", "UnEquip NOT successful, slot " + slot + " doesn't exist.");
@@ -28,7 +27,7 @@ namespace EquipmentInventoryFace
         return false;
     }
 
-    static bool Equip(Inventory* inventory, Equipment* equipment, Item* item, std::string slot) {
+    bool Equip(Inventory* inventory, Equipment* equipment, Item* item, std::string slot) {
 
         if (!equipment->HasSlot(slot)) {
             debug_print("EquipmentInventoryFace:Equip", "Equip of item " + item->Name() + " NOT successful, equipment has no such slot: " + slot);

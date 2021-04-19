@@ -6,21 +6,31 @@ class Inventory
 public:
     Inventory()
     {
-        _items = List<Item*>();
+        _items = std::unordered_map<unsigned int, Item*>();
     }
 
     void AddItem(Item* item_to_add)
     {
-        _items.push_back(item_to_add);
+        //_items.push_back(item_to_add);
+        //_items.insert(std::pair<unsigned int, Item*>(item_to_add->SessionItemId(), item_to_add));
+        _items[item_to_add->SessionItemId()] = item_to_add;
     }
 
     void RemoveItem(Item* item_to_remove)
     {
-        _items.erase(std::remove(_items.begin(), _items.end(), item_to_remove), _items.end());
+        _items.erase(item_to_remove->SessionItemId());
     }
 
-    List<Item*> Items() const { return _items; }
+    bool HasItemWithSessionId(unsigned int item_session_id) {
+        return _items.count(item_session_id) > 0;
+    }
+
+    Item* GetItemBySessionId(unsigned int item_session_id) {
+        return _items[item_session_id];
+    }
+
+    std::unordered_map<unsigned int, Item*> Items() const { return _items; }
 private:
-    List<Item*> _items;
+    std::unordered_map<unsigned int, Item*>  _items;
 
 };

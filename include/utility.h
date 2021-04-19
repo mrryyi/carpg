@@ -7,6 +7,7 @@
 #include <stdlib.h> // srand, rand
 #include <time.h> // time
 #include <unordered_set> // unordered_set
+#include <unordered_map>
 
 #define List std::vector
 #define __DEBUGMODE__
@@ -17,7 +18,7 @@ void debug_print(std::string origin, std::string message) {
 #endif
 }
 
-int next_session_item_id() {
-    static int nextID = 0;
+unsigned int next_session_item_id() {
+    static unsigned int nextID = 0;
     return ++nextID;
 }

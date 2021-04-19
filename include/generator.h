@@ -1,9 +1,15 @@
 #pragma once
 #include "preincludes.h"
 
-namespace Generator {
+class Generator {
+private:
+    SessionItems* _ref_sessionItems;
+public:
+    Generator(SessionItems* sessionItems) {
+        _ref_sessionItems = sessionItems;
+    }
 
-    static double RandomNumberWithinRangeWithStep(double rangeMin, double rangeMax, double step)
+    double RandomNumberWithinRangeWithStep(double rangeMin, double rangeMax, double step)
     {
         if (rangeMax < rangeMin) {
             std::string error_message = "RandomNumberWithinRangeWithStep ERROR:";
@@ -27,7 +33,7 @@ namespace Generator {
         return generatedNumber;
     }
 
-    static Stat GenerateStat(PossibleStat possibleStat)
+    Stat GenerateStat(PossibleStat possibleStat)
     {
         auto generatedNumber = RandomNumberWithinRangeWithStep(possibleStat.RangeMin(),
             possibleStat.RangeMax(),
@@ -37,17 +43,20 @@ namespace Generator {
         return generatedStat;
     }
 
-    static Item GenerateItem(std::string name, List<PossibleStat> possibleStats, std::string slot) {
+    Item GenerateItem(std::string name, List<PossibleStat> possibleStats, std::string slot) {
         List<Stat> generatedStats = List<Stat>();
 
         for (PossibleStat possibleStat : possibleStats) {
             generatedStats.push_back(GenerateStat(possibleStat));
         }
 
-        return Item(name, generatedStats, slot);
+        Item item(name, generatedStats, slot);
+        _ref_sessionItems->NewItem(item);
+
+        return item;
     }
 
-    static Item GenerateItemWithBase(ItemBase itemBase) {
+    Item GenerateItemWithBase(ItemBase itemBase) {
         return GenerateItem(itemBase.Name(), itemBase.PossibleStats(), itemBase.Slot());
     }
 

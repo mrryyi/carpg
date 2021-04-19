@@ -86,11 +86,6 @@ public:
             } // end if
         } // end for
 
-        for (auto const& countedStat : countedStats) {
-            std::cout << countedStat.first << ": " << countedStat.second << std::endl;
-            returnStats.push_back(Stat(countedStat.first, countedStat.second));
-        }
-
         return returnStats;
     }
 

@@ -11,17 +11,23 @@ public:
         _stats = Stats;
         _slot = Slot;
         _sessionItemId = next_session_item_id();
+        std::cout << "Generating session id: " << std::to_string(_sessionItemId);
+        std::cout << ", SessionItemID() = " << std::to_string(SessionItemId()) << std::endl;
+    }
+
+    Item() {
+
     }
 
     List<Stat> Stats() const { return _stats; }
     std::string Name() const { return _name; }
     std::string Slot() const { return _slot; }
-    int SessionItemId() const { return _sessionItemId; }
+    unsigned int SessionItemId() const { return _sessionItemId; }
 private:
     List<Stat> _stats;
     std::string _name = "unknown";
     std::string _slot = "unknown";
-    int _sessionItemId;
+    unsigned int _sessionItemId;
 };
 
 
