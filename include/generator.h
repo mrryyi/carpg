@@ -7,6 +7,7 @@ private:
 public:
     Generator(SessionItems* sessionItems) {
         _ref_sessionItems = sessionItems;
+        srand(time(NULL));
     }
 
     double RandomNumberWithinRangeWithStep(double rangeMin, double rangeMax, double step)
