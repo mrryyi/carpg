@@ -21,21 +21,10 @@ public:
         delete _generator;
     }
 
-    Generator* GetGenerator() const {
-        return _generator;
-    }
-
-    Inventory* GetInventory() const {
-        return _inventory;
-    }
-
-    Equipment* GetEquipment() const {
-        return _equipment;
-    }
-
-    SessionItems* GetSessionItems() const {
-        return _sessionItems;
-    }
+    Generator* GetGenerator() const { return _generator; }
+    Inventory* GetInventory() const { return _inventory; }
+    Equipment* GetEquipment() const { return _equipment; }
+    SessionItems* GetSessionItems() const { return _sessionItems; }
 
     bool UnEquip(std::string slot) {
         return EquipmentInventoryFace::UnEquip(_inventory, _equipment, slot);

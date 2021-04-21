@@ -11,8 +11,7 @@ public:
         _stats = Stats;
         _slot = Slot;
         _sessionItemId = next_session_item_id();
-        std::cout << "Generating session id: " << std::to_string(_sessionItemId);
-        std::cout << ", SessionItemID() = " << std::to_string(SessionItemId()) << std::endl;
+        debug_print("Item::Item", "Generating session id: " + std::to_string(_sessionItemId) + ", SessionItemID() = " + std::to_string(SessionItemId()));
     }
 
     Item() {
