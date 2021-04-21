@@ -1,5 +1,47 @@
 #include "preincludes.h"
 
+
+int main() {
+	ItemManager itemManager = ItemManager();
+
+	std::string name = "Excalibur";
+	std::string slot = "hand";
+	std::string possible_stat_1 = "strength";
+	std::string possible_stat_2 = "vitality";
+
+	auto possibleStatsExcalibur = List<PossibleStat>();
+	possibleStatsExcalibur.push_back(PossibleStat(possible_stat_1, 500, 750, 1));
+	possibleStatsExcalibur.push_back(PossibleStat(possible_stat_2, 500, 750, 1));
+	ItemBase possibleExcalibur = ItemBase(name, possibleStatsExcalibur, slot);
+
+	itemManager.GetGenerator()->GenerateItemWithBase(possibleExcalibur);
+	itemManager.GetGenerator()->GenerateItemWithBase(possibleExcalibur);
+	itemManager.GetGenerator()->GenerateItemWithBase(possibleExcalibur);
+	itemManager.GetGenerator()->GenerateItemWithBase(possibleExcalibur);
+	itemManager.GetGenerator()->GenerateItemWithBase(possibleExcalibur);
+
+
+	// Add items in session to inventory.
+	for (auto&  item : itemManager.GetSessionItems()->Items()) {
+		itemManager.GetInventory()->AddItem(itemManager.GetSessionItems()->GetItemBySessionId(item.second.SessionItemId()));
+		unsigned int mapID = item.first;
+		unsigned int itemID = item.second.SessionItemId();
+		std::cout << "ID in map: " << mapID  << ", ID in item: " << itemID <<  std::endl;
+
+	}
+
+	for (auto& item : itemManager.GetInventory()->Items()) {
+
+		unsigned int mapID = item.first;
+		//unsigned int itemID = item.second->SessionItemId();
+		
+		std::cout << "ID in map: " << mapID  << ", ID in item: " << item.second->SessionItemId() << ", item pointer: " << item.second <<  std::endl;
+	}
+
+	//Printer::PrintInventory(itemManager.GetInventory());
+}
+
+/*
 int main()
 {
     srand(time(NULL));
@@ -33,3 +75,4 @@ int main()
     Printer::PrintEquipmentStats(itemManager.GetEquipment());
 
 }
+*/

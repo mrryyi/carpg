@@ -9,7 +9,13 @@ Similar to an inventory, but not.
 class SessionItems
 {
 public:
-    SessionItems() { }
+    SessionItems() {
+        _current_session_ID = 0;
+    }
+
+    int NextSessionId() {
+        return ++_current_session_ID;
+    }
 
     void NewItem(Item item_to_add)
     {
@@ -27,6 +33,8 @@ public:
     std::unordered_map<unsigned int, Item> Items() const { return _items; }
 private:
     std::unordered_map<unsigned int, Item> _items;
+
+    unsigned int _current_session_ID;
 
     void RemoveItem(Item item_to_remove)
     {

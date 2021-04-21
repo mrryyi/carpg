@@ -41,6 +41,14 @@ public:
         return _slots.count(slot) > 0;
     }
 
+    bool HasItemWithSessionId(unsigned int session_id) {
+        for (auto const& slot : _slots)
+            if (slot.second->SessionItemId() == session_id) 
+                return true;
+
+        return false;
+    }
+
     bool HasItemInSlot(std::string slot) {
         if (HasSlot(slot))
             return _slots[slot] != nullptr;

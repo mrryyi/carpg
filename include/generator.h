@@ -49,8 +49,10 @@ public:
         for (PossibleStat possibleStat : possibleStats) {
             generatedStats.push_back(GenerateStat(possibleStat));
         }
+        unsigned int next_session_id = _ref_sessionItems->NextSessionId();
 
-        Item item(name, generatedStats, slot);
+        debug_print("GenerateItem", std::to_string(next_session_id));
+        Item item(name, generatedStats, slot, next_session_id);
         _ref_sessionItems->NewItem(item);
 
         return item;

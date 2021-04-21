@@ -13,6 +13,7 @@ public:
     {
         //_items.push_back(item_to_add);
         //_items.insert(std::pair<unsigned int, Item*>(item_to_add->SessionItemId(), item_to_add));
+        std::cout << "Adding item: " << item_to_add << std::endl;
         _items[item_to_add->SessionItemId()] = item_to_add;
     }
 

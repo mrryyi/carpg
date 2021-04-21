@@ -65,8 +65,9 @@ public:
 
     static void PrintInventory(Inventory* inventory) {
         PrintTitle("INVENTORY");
-        for (auto item : inventory->Items())
+        for (auto& item : inventory->Items()) {
             PrintItem(item.second);
+        }
 
     }
 

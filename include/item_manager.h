@@ -26,6 +26,19 @@ public:
     Equipment* GetEquipment() const { return _equipment; }
     SessionItems* GetSessionItems() const { return _sessionItems; }
 
+    bool AddItemToInventoryBySessionId(unsigned int session_id) {
+        if (!_sessionItems->HasItemWithSessionId(session_id))
+            return false;
+
+        // if item is in equipment
+        if (_equipment->HasItemWithSessionId(session_id)) {
+            UnEquip(_sessionItems->GetItemBySessionId(session_id)->Slot());
+        }
+
+        _inventory->AddItem(_sessionItems->GetItemBySessionId(session_id));
+        return true;
+    }
+
     bool UnEquip(std::string slot) {
         return EquipmentInventoryFace::UnEquip(_inventory, _equipment, slot);
     } 

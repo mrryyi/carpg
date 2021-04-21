@@ -5,12 +5,12 @@ class Item
 {
 
 public:
-    Item(std::string Name, List<Stat> Stats, std::string Slot)
+    Item(std::string Name, List<Stat> Stats, std::string Slot, unsigned int SessionId = 0)
     {
         _name = Name;
         _stats = Stats;
         _slot = Slot;
-        _sessionItemId = next_session_item_id();
+        _sessionItemId = SessionId;
         debug_print("Item::Item", "Generating session id: " + std::to_string(_sessionItemId) + ", SessionItemID() = " + std::to_string(SessionItemId()));
     }
 

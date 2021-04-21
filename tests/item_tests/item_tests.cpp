@@ -12,7 +12,7 @@ namespace itemtests
 	TEST_CLASS(itemtests)
 	{
 	public:
-
+		
 		TEST_METHOD(ItemGenerationTest) {
 
 			ItemManager itemManager = ItemManager();
@@ -33,7 +33,34 @@ namespace itemtests
 			Assert::AreEqual(slot, excalibur.Slot());
 		} // End TEST_METHOD
 
-		TEST_METHOD(InventorySessionIdTest) {
+		
+
+		TEST_METHOD(Should_NotEquipItem_WhenItemNotInInventory) {
+			ItemManager itemManager = ItemManager();
+
+			std::string name = "Excalibur";
+			std::string slot = "hand";
+			std::string possible_stat_1 = "strength";
+			std::string possible_stat_2 = "vitality";
+
+			auto possibleStatsExcalibur = List<PossibleStat>();
+			possibleStatsExcalibur.push_back(PossibleStat(possible_stat_1, 500, 750, 1));
+			possibleStatsExcalibur.push_back(PossibleStat(possible_stat_2, 500, 750, 1));
+			ItemBase possibleExcalibur = ItemBase(name, possibleStatsExcalibur, slot);
+
+			itemManager.GetGenerator()->GenerateItemWithBase(possibleExcalibur);
+			itemManager.GetGenerator()->GenerateItemWithBase(possibleExcalibur);
+			itemManager.GetGenerator()->GenerateItemWithBase(possibleExcalibur);
+			itemManager.GetGenerator()->GenerateItemWithBase(possibleExcalibur);
+			itemManager.GetGenerator()->GenerateItemWithBase(possibleExcalibur);
+
+			for (auto const& item : itemManager.GetSessionItems()->Items()) {
+				// Try to equip, should return false
+				Assert::AreEqual(false, itemManager.EquipBySessionId(item.first, item.second.Slot()));
+			}
+		}
+
+		TEST_METHOD(Should_HaveUniqueSessionId_WhenGeneratingItems) {
 
 			ItemManager itemManager = ItemManager();
 
@@ -63,16 +90,71 @@ namespace itemtests
 			}
 
 			// Add items in session to inventory.
-			for (auto item : itemManager.GetSessionItems()->Items())
+			for (auto item : itemManager.GetSessionItems()->Items()) {
 				itemManager.GetInventory()->AddItem(&item.second);
-
+				Assert::AreEqual(true, itemManager.GetInventory()->HasItemWithSessionId(item.second.SessionItemId()));
+			}
+			
+			/*
 			// Check that each item in the inventory has a unique session id
 			// and that the key and value are paired correctly.
 			lastID = 696969; // impossible to generate in this small test
 			for (const auto item : itemManager.GetInventory()->Items()) {
 				Assert::AreNotEqual(lastID, item.second->SessionItemId());
 				Assert::AreEqual(item.first, item.second->SessionItemId());
+				lastID = item.second->SessionItemId();
+
 			}
+			*/
 		} // End TEST_METHOD
+		
+		TEST_METHOD(Should_SameSessionIdAsKeyAndValue_WhenAddingItemsToInventory) {
+
+			ItemManager itemManager = ItemManager();
+
+			std::string name = "Excalibur";
+			std::string slot = "hand";
+			std::string possible_stat_1 = "strength";
+			std::string possible_stat_2 = "vitality";
+
+			auto possibleStatsExcalibur = List<PossibleStat>();
+			possibleStatsExcalibur.push_back(PossibleStat(possible_stat_1, 500, 750, 1));
+			possibleStatsExcalibur.push_back(PossibleStat(possible_stat_2, 500, 750, 1));
+			ItemBase possibleExcalibur = ItemBase(name, possibleStatsExcalibur, slot);
+
+			itemManager.GetGenerator()->GenerateItemWithBase(possibleExcalibur);
+			itemManager.GetGenerator()->GenerateItemWithBase(possibleExcalibur);
+			itemManager.GetGenerator()->GenerateItemWithBase(possibleExcalibur);
+			itemManager.GetGenerator()->GenerateItemWithBase(possibleExcalibur);
+			itemManager.GetGenerator()->GenerateItemWithBase(possibleExcalibur);
+
+
+			// Add items in session to inventory.
+			for (auto& item : itemManager.GetSessionItems()->Items()) {
+				itemManager.GetInventory()->AddItem(itemManager.GetSessionItems()->GetItemBySessionId(item.second.SessionItemId()));
+				Assert::AreEqual(true, itemManager.GetInventory()->HasItemWithSessionId(item.second.SessionItemId()));
+			}
+
+			// Check if the mapping is correct. pair with 1 as first should have second.SessionItemId() == 1.
+			for (auto item : itemManager.GetInventory()->Items()) {
+
+				unsigned int mapID = item.first;
+				unsigned int itemID = item.second->SessionItemId();
+				Assert::AreEqual(mapID, itemID);
+			}
+
+			
+			// Check that each item in the inventory has a unique session id
+			// and that the key and value are paired correctly.
+			unsigned int lastID = 696969; // impossible to generate in this small test
+			for (const auto item : itemManager.GetInventory()->Items()) {
+				Assert::AreNotEqual(lastID, item.second->SessionItemId());
+				Assert::AreEqual(item.first, item.second->SessionItemId());
+				lastID = item.second->SessionItemId();
+
+			}
+			
+		} // End TEST_METHOD
+
 	};
 }
