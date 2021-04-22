@@ -19,55 +19,134 @@ class ItemManager
 {
 public:
     ItemManager() {
-        _inventory = new Inventory();
-        _equipment = new Equipment();
-        _sessionItems = new SessionItems();
-        _generator = new Generator(_sessionItems);
+        _item_containers = std::map<unsigned int, ItemContainer*>();
+        _session_items = std::map<unsigned int, Item*>();
     }
 
     ~ItemManager() {
-        delete _inventory;
-        delete _equipment;
-        delete _sessionItems;
-        delete _generator;
+        for (auto i = _item_containers.begin(); i != _item_containers.end(); i++) 
+            delete i->second;
+
+        for (auto i = _session_items.begin(); i != _session_items.end(); i++)
+            delete i->second;
     }
 
-    Generator* GetGenerator() const { return _generator; }
-    Inventory* GetInventory() const { return _inventory; }
-    Equipment* GetEquipment() const { return _equipment; }
-    SessionItems* GetSessionItems() const { return _sessionItems; }
-
-    bool AddItemToInventoryBySessionId(unsigned int session_id) {
-        
-        if (!_sessionItems->HasItemWithSessionId(session_id))
-            return false;
-
-        _inventory->AddItem(_sessionItems->GetItemBySessionId(session_id));
-        return true;
+    unsigned int new_item_container(unsigned int size) {
+        unsigned int id = next_item_container_id();
+        _item_containers[id] = new ItemContainer(next_item_container_id(), 64);
+        return id;
     }
 
-    bool UnEquip(std::string slot) {
-        return EquipmentInventoryFace::UnEquip(_inventory, _equipment, slot);
-    } 
-
-    bool Equip(Item* item, std::string slot) {
-        return EquipmentInventoryFace::Equip(_inventory, _equipment, item, slot);
-    }
-
-    bool EquipBySessionId(unsigned int item_session_id, std::string slot) {
-
-        if (!_sessionItems->HasItemWithSessionId(item_session_id)) {
-            debug_print("ItemManager::EquipBySessionId", "No session id exists, can't equip.");
-            return false;
+    unsigned int container_that_contains_item(unsigned int session_item_id) {
+        for (auto item_container : _item_containers) {
+            if (item_container.second->contains(session_item_id)) {
+                return item_container.first;
+            }
         }
 
-        return EquipmentInventoryFace::Equip(_inventory, _equipment, _sessionItems->GetItemBySessionId(item_session_id), slot);
+        return 0;
+    }
+
+    ItemContainer* get_container(unsigned int item_container_id) {
+        if (container_exists(item_container_id))
+            return _item_containers[item_container_id];
+        else
+            return nullptr;
+    }
+
+    std::vector<Item*>* get_items_in_container(unsigned int container_id) {
+        unsigned int amount_of_items = _item_containers[container_id]->get_current_amount_of_items();
+        unsigned int container_size = _item_containers[container_id]->get_size();
+        std::vector<Item*> items(amount_of_items);
+        std::vector<unsigned int> items_in_container = _item_containers[container_id]->get_items();
+        
+        unsigned int current_added_item_index = 0;
+
+        for (unsigned int container_slot = 0; container_slot < container_size; container_slot++) {
+            if (items_in_container[container_slot] != 0) {
+                items[current_added_item_index] = _session_items[items_in_container[container_slot]];
+                current_added_item_index++;
+            }
+        }
+
+        return &items;
+    }
+
+    bool switch_container(unsigned int from_container, unsigned int to_container, unsigned int session_item_id) {
+        if (_item_containers[from_container]->remove_item_by_item_session_id(session_item_id)) {
+            _item_containers[to_container]->add_item_first_available_slot(session_item_id);
+            return true;
+        }
+        
+        return false;
+    }
+
+    bool move_item_to_container(unsigned int to_item_container_id, unsigned int session_item_id) {
+        
+        // No such item.
+        if (item_exists(session_item_id) == false)
+            return false;
+        
+        // No such container.
+        if (container_exists(to_item_container_id) == false)
+            return false;
+
+        // Container to move to is full.
+        if (_item_containers[to_item_container_id]->is_full())
+            return false;
+
+        unsigned int the_items_current_container = container_that_contains_item(session_item_id);
+        
+        // The item has no current container! Feel free to add without switching.
+        if (the_items_current_container == 0) {
+            _item_containers[to_item_container_id]->add_item_first_available_slot(session_item_id);
+        }
+        else {
+            // If there is a container that contains the item, then switch between them.
+            switch_container(the_items_current_container, to_item_container_id, session_item_id);
+        }
+    }
+
+    // What is known about the item should also be its item base when we read it in.
+    unsigned int create_item_from_known_item_info(std::string name, std::vector<Stat> stats, std::string slot) {
+        unsigned int next_session_id = next_session_item_id();
+
+        debug_print("create_item_from_known_item_info", "session id = " + std::to_string(next_session_id));
+
+        _session_items[next_session_id] = new Item(name, stats, slot, next_session_id);
+        return next_session_id;
+    }
+
+    unsigned int generate_item(std::string name, std::vector<PossibleStat> possibleStats, std::string slot) {
+        ItemBase itemBase = ItemBase(name, possibleStats, slot);
+        return generate_item_with_base(itemBase);
+    }
+
+    unsigned int generate_item_with_base(ItemBase itemBase) {
+
+        std::vector<Stat> generatedStats = std::vector<Stat>();
+
+        for (PossibleStat possibleStat : itemBase.PossibleStats())
+            generatedStats.push_back(generate_stat(possibleStat));
+
+        unsigned int current_session_id = next_session_item_id();
+
+        _session_items[current_session_id] = new Item(itemBase.Name(), generatedStats, itemBase.Slot(), current_session_id);
+
+        debug_print("generate_item_with_base", "session id = " + std::to_string(current_session_id));
+        return current_session_id;
+    }
+
+    bool container_exists(unsigned int item_container_id) {
+        return _item_containers.count(item_container_id) > 0;
+    }
+
+    bool item_exists(unsigned int session_item_id) {
+        return _session_items.count(session_item_id) > 0;
     }
 
 private:
 
-    Inventory* _inventory;
-    Equipment* _equipment;
-    SessionItems* _sessionItems;
-    Generator* _generator;
+    std::map<unsigned int, ItemContainer*> _item_containers;
+    std::map<unsigned int, Item*> _session_items;
 };

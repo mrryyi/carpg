@@ -1,11 +1,10 @@
 #pragma once
 #include "utility.h"
+#include "unique_id_generator.h"
 #include "stat.h"
 #include "item.h"
-#include "inventory.h"
 #include "equipment.h"
-#include "equipmentinventoryface.h"
 #include "session_items.h"
-#include "printer.h"
 #include "generator.h"
+#include "itemcontainer.h"
 #include "item_manager.h"
