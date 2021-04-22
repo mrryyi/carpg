@@ -3,6 +3,17 @@
 
 /*
 This class is about managing the pieces of the item puzzle.
+It is supposed to be the only class you need to initialize in order to manage items.
+
+Possible future TODOs if wanted:
+Implement stash
+* Equipment and inventory is not likely to only be the only item containers
+* Should be able to equip items from other item containers
+* Should be able to move items between item containers
+** Perhaps just have a list of existing item containers, have them be of the inventory class, but call them "ExistingItemContainers", maybe.
+** functionality to equip and unequip should still work if they are of the inventory class.
+* T
+Implement slots
 */
 class ItemManager
 {

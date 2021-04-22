@@ -25,8 +25,21 @@ private:
 // Usage:
 // For example, using an array of PossibleStat,
 // we can generate the numbers for the resulting item.
-// PossibleStat("strength", 500, 750) will be used to generate a strength stat
-// with a value between 500 and 750.
+// PossibleStat("strength", 500, 750, 1) will be used to generate a strength stat
+// with a value between 500 and 750, with step making sure that possible values are apart by at least 1.
+// 
+// 5 lowest possible values with rangeMin == 500 and step == 1:
+//    500
+//    501
+//    502
+//    503
+//    504
+// 5 lowest possible values with rangeMin == 500 step == 0.5:
+//    500
+//    500.5
+//    501
+//    501.5
+//    502
 
 class PossibleStat {
 

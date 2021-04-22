@@ -29,7 +29,7 @@ namespace EquipmentInventoryFace
 
     bool Equip(Inventory* inventory, Equipment* equipment, Item* item, std::string slot) {
 
-        if (inventory->HasItemWithSessionId(item->SessionItemId())) {
+        if (!inventory->HasItemWithSessionId(item->SessionItemId())) {
             debug_print("EquipmentInventoryFace:Equip", "Equip of item " + item->Name() + " NOT successful, inventory has no such item.");
             return false;
         }

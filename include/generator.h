@@ -1,6 +1,9 @@
 #pragma once
 #include "preincludes.h"
-
+/*
+Generates numbers, stats, and items.
+It takes a reference of SessionItem because SessionItems needs to know of every item in the session.
+*/
 class Generator {
 private:
     SessionItems* _ref_sessionItems;
@@ -44,22 +47,29 @@ public:
         return generatedStat;
     }
 
-    Item GenerateItem(std::string name, List<PossibleStat> possibleStats, std::string slot) {
-        List<Stat> generatedStats = List<Stat>();
-
-        for (PossibleStat possibleStat : possibleStats) {
-            generatedStats.push_back(GenerateStat(possibleStat));
-        }
+    Item* GenerateItemFromKnownStats(std::string name, List<Stat> stats, std::string slot) {
         unsigned int next_session_id = _ref_sessionItems->NextSessionId();
 
-        debug_print("GenerateItem", std::to_string(next_session_id));
-        Item item(name, generatedStats, slot, next_session_id);
-        _ref_sessionItems->NewItem(item);
+        debug_print("GenerateItemFromKnownStats", "session id = " + std::to_string(next_session_id));
 
-        return item;
+        _ref_sessionItems->NewItem(Item(name, stats, slot, next_session_id));
+        return _ref_sessionItems->GetItemBySessionId(next_session_id);
     }
 
-    Item GenerateItemWithBase(ItemBase itemBase) {
+    Item* GenerateItem(std::string name, List<PossibleStat> possibleStats, std::string slot) {
+        List<Stat> generatedStats = List<Stat>();
+
+        for (PossibleStat possibleStat : possibleStats) 
+            generatedStats.push_back(GenerateStat(possibleStat));
+
+        unsigned int next_session_id = _ref_sessionItems->NextSessionId();
+        _ref_sessionItems->NewItem(Item(name, generatedStats, slot, next_session_id));
+        debug_print("GenerateItem", "session id = " + std::to_string(next_session_id));
+
+        return _ref_sessionItems->GetItemBySessionId(next_session_id);
+    }
+
+    Item* GenerateItemWithBase(ItemBase itemBase) {
         return GenerateItem(itemBase.Name(), itemBase.PossibleStats(), itemBase.Slot());
     }
 

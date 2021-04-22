@@ -27,10 +27,10 @@ namespace itemtests
 			possibleStatsExcalibur.push_back(PossibleStat(possible_stat_2, 500, 750, 1));
 			auto possibleExcalibur = ItemBase(name, possibleStatsExcalibur, slot);
 
-			Item excalibur = itemManager.GetGenerator()->GenerateItemWithBase(possibleExcalibur);
+			Item* excalibur = itemManager.GetGenerator()->GenerateItemWithBase(possibleExcalibur);
 
-			Assert::AreEqual(name, excalibur.Name());
-			Assert::AreEqual(slot, excalibur.Slot());
+			Assert::AreEqual(name, excalibur->Name());
+			Assert::AreEqual(slot, excalibur->Slot());
 		} // End TEST_METHOD
 
 		
@@ -58,6 +58,27 @@ namespace itemtests
 				// Try to equip, should return false
 				Assert::AreEqual(false, itemManager.EquipBySessionId(item.first, item.second.Slot()));
 			}
+		}
+
+		TEST_METHOD(Should_EquipItem_WhenItemInInventory) {
+			ItemManager itemManager = ItemManager();
+
+			std::string name = "Excalibur";
+			std::string slot = "hand";
+			std::string possible_stat_1 = "strength";
+			std::string possible_stat_2 = "vitality";
+
+			auto possibleStatsExcalibur = List<PossibleStat>();
+			possibleStatsExcalibur.push_back(PossibleStat(possible_stat_1, 500, 750, 1));
+			possibleStatsExcalibur.push_back(PossibleStat(possible_stat_2, 500, 750, 1));
+			ItemBase possibleExcalibur = ItemBase(name, possibleStatsExcalibur, slot);
+
+			Item* excalibur = itemManager.GetGenerator()->GenerateItemWithBase(possibleExcalibur);
+
+			itemManager.AddItemToInventoryBySessionId(excalibur->SessionItemId());
+			// Try to equip, should return true
+			Assert::AreEqual(true, itemManager.EquipBySessionId(excalibur->SessionItemId(), "righthand"));
+
 		}
 
 		TEST_METHOD(Should_HaveUniqueSessionId_WhenGeneratingItems) {

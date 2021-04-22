@@ -1,6 +1,12 @@
 #pragma once
 #include "preincludes.h"
 
+/*
+Possible future TODOs:
+If we want different inventories, we kinda want to be able to separate them by id or name.
+If we want to separate Inventory and other Item Containers, we could rename this class ItemContainer
+and have subclasses Inventory, and maybe Stash, that inherit from ItemContainer, if they will have different implementations.
+*/
 class Inventory
 {
 public:
@@ -11,9 +17,7 @@ public:
 
     void AddItem(Item* item_to_add)
     {
-        //_items.push_back(item_to_add);
-        //_items.insert(std::pair<unsigned int, Item*>(item_to_add->SessionItemId(), item_to_add));
-        std::cout << "Adding item: " << item_to_add << std::endl;
+        debug_print("Inventory::AddItem", "Added item with session ID: " + std::to_string(item_to_add->SessionItemId()));
         _items[item_to_add->SessionItemId()] = item_to_add;
     }
 
