@@ -10,10 +10,9 @@
 #include <unordered_map>
 
 #define List std::vector
-#define __DEBUGMODE__
 
 void debug_print(std::string origin, std::string message) {
-#ifdef __DEBUGMODE__
+#ifdef _DEBUG
     std::cout << "[DEBUG] ORIGIN: " << origin << ", " << message << std::endl;
 #endif
 }
