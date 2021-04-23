@@ -29,4 +29,8 @@ int main() {
 		std::cout << "inventory exists." << std::endl;
 
 	// Get the items in inventory and print them.
+	Item* item = item_manager.get_one_item(item_session_id);
+
+
+	std::cout << item->Name() << ": hello uwu i wish you wuwdnt wake me uwp :(" << std::endl;
 }

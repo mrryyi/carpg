@@ -54,6 +54,10 @@ public:
             return nullptr;
     }
 
+    Item* get_one_item(unsigned int session_item_id) {
+        return _session_items[session_item_id];
+    }
+
     std::vector<Item*>* get_items_in_container(unsigned int container_id) {
         unsigned int amount_of_items = _item_containers[container_id]->get_current_amount_of_items();
         unsigned int container_size = _item_containers[container_id]->get_size();
