@@ -8,3 +8,4 @@
 #include "generator.h"
 #include "itemcontainer.h"
 #include "item_manager.h"
+#include "printer.h"

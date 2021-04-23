@@ -27,14 +27,15 @@ namespace itemtests
 			possibleStatsExcalibur.push_back(PossibleStat(possible_stat_2, 500, 750, 1));
 			auto possibleExcalibur = ItemBase(name, possibleStatsExcalibur, slot);
 
-			Item* excalibur = itemManager.GetGenerator()->GenerateItemWithBase(possibleExcalibur);
+			unsigned int session_item_id = itemManager.generate_item_with_base(possibleExcalibur);
 
-			Assert::AreEqual(name, excalibur->Name());
-			Assert::AreEqual(slot, excalibur->Slot());
+			Assert::AreEqual(name, itemManager.get_one_item(session_item_id)->Name());
+			Assert::AreEqual(slot, itemManager.get_one_item(session_item_id)->Slot());
 		} // End TEST_METHOD
 
 		
-
+		/*
+		TODO: IMPLEMENT EQUIPMENT AGAIN
 		TEST_METHOD(Should_NotEquipItem_WhenItemNotInInventory) {
 			ItemManager itemManager = ItemManager();
 
@@ -48,11 +49,12 @@ namespace itemtests
 			possibleStatsExcalibur.push_back(PossibleStat(possible_stat_2, 500, 750, 1));
 			ItemBase possibleExcalibur = ItemBase(name, possibleStatsExcalibur, slot);
 
-			itemManager.GetGenerator()->GenerateItemWithBase(possibleExcalibur);
-			itemManager.GetGenerator()->GenerateItemWithBase(possibleExcalibur);
-			itemManager.GetGenerator()->GenerateItemWithBase(possibleExcalibur);
-			itemManager.GetGenerator()->GenerateItemWithBase(possibleExcalibur);
-			itemManager.GetGenerator()->GenerateItemWithBase(possibleExcalibur);
+			unsigned int inventory_id = itemManager.new_item_container(64);
+
+			for (int i = 0; i < 10; i++) {
+				unsigned int item_id = itemManager.generate_item_with_base(possibleExcalibur);
+				itemManager.move_item_to_container(inventory_id, item_id);
+			}
 
 			for (auto const& item : itemManager.GetSessionItems()->Items()) {
 				// Try to equip, should return false
@@ -79,7 +81,7 @@ namespace itemtests
 			// Try to equip, should return true
 			Assert::AreEqual(true, itemManager.EquipBySessionId(excalibur->SessionItemId(), "righthand"));
 
-		}
+		}*/
 
 		TEST_METHOD(Should_HaveUniqueSessionId_WhenGeneratingItems) {
 
@@ -95,30 +97,19 @@ namespace itemtests
 			possibleStatsExcalibur.push_back(PossibleStat(possible_stat_2, 500, 750, 1));
 			ItemBase possibleExcalibur = ItemBase(name, possibleStatsExcalibur, slot);
 
-			itemManager.GetGenerator()->GenerateItemWithBase(possibleExcalibur);
-			itemManager.GetGenerator()->GenerateItemWithBase(possibleExcalibur);
-			itemManager.GetGenerator()->GenerateItemWithBase(possibleExcalibur);
-			itemManager.GetGenerator()->GenerateItemWithBase(possibleExcalibur);
-			itemManager.GetGenerator()->GenerateItemWithBase(possibleExcalibur);
+			unsigned int last_id = itemManager.generate_item_with_base(possibleExcalibur);
+			unsigned int session_item_id;
+			unsigned int i = 0;
 
-			// Check that each item in the session has a unique session id.
-			// and that the keys and values are paired correctly.
-			unsigned int lastID = 696969; // impossible to generate in this small test
-			for (const auto item : itemManager.GetSessionItems()->Items()) {
-				Assert::AreNotEqual(lastID, item.second.SessionItemId());
-				Assert::AreEqual(item.first, item.second.SessionItemId());
-				lastID = item.second.SessionItemId();
-			}
-
-			// Add items in session to inventory.
-			for (auto item : itemManager.GetSessionItems()->Items()) {
-				itemManager.AddItemToInventoryBySessionId(item.second.SessionItemId());
-				Assert::AreEqual(true, itemManager.GetInventory()->HasItemWithSessionId(item.second.SessionItemId()));
+			for (int i = 0; i < 100; i++) {
+				session_item_id = itemManager.generate_item_with_base(possibleExcalibur);
+				Assert::AreNotEqual(last_id, session_item_id);
+				last_id = session_item_id;
 			}
 			
 		} // End TEST_METHOD
 
-		TEST_METHOD(Should_HaveEqualSessionIDKeyAndValueSessionID_InSessionItems) {
+		TEST_METHOD(Should_HaveEqualSessionIDKeyAndValue_InSessionItems) {
 
 			ItemManager itemManager = ItemManager();
 
@@ -132,19 +123,20 @@ namespace itemtests
 			possibleStatsExcalibur.push_back(PossibleStat(possible_stat_2, 500, 750, 1));
 			ItemBase possibleExcalibur = ItemBase(name, possibleStatsExcalibur, slot);
 
-			itemManager.GetGenerator()->GenerateItemWithBase(possibleExcalibur);
-			itemManager.GetGenerator()->GenerateItemWithBase(possibleExcalibur);
-			itemManager.GetGenerator()->GenerateItemWithBase(possibleExcalibur);
-			itemManager.GetGenerator()->GenerateItemWithBase(possibleExcalibur);
-			itemManager.GetGenerator()->GenerateItemWithBase(possibleExcalibur);
+			itemManager.generate_item_with_base(possibleExcalibur);
+			itemManager.generate_item_with_base(possibleExcalibur);
+			itemManager.generate_item_with_base(possibleExcalibur);
+			itemManager.generate_item_with_base(possibleExcalibur);
+			itemManager.generate_item_with_base(possibleExcalibur);
+			itemManager.generate_item_with_base(possibleExcalibur);
 
 			// Check that the keys and values are paired correctly.
-			for (const auto item : itemManager.GetSessionItems()->Items())
-				Assert::AreEqual(item.first, item.second.SessionItemId());
+			for (auto& item : itemManager.get_session_items())
+				Assert::AreEqual(item.first, item.second->SessionItemId());
 
 		} // End TEST_METHOD
 
-		TEST_METHOD(Should_HaveItemInInventory_WhenAddingItems) {
+		TEST_METHOD(Should_HaveItemsInInventory_WhenAddingItems) {
 
 			ItemManager itemManager = ItemManager();
 
@@ -158,22 +150,17 @@ namespace itemtests
 			possibleStatsExcalibur.push_back(PossibleStat(possible_stat_2, 500, 750, 1));
 			ItemBase possibleExcalibur = ItemBase(name, possibleStatsExcalibur, slot);
 
-			itemManager.GetGenerator()->GenerateItemWithBase(possibleExcalibur);
-			itemManager.GetGenerator()->GenerateItemWithBase(possibleExcalibur);
-			itemManager.GetGenerator()->GenerateItemWithBase(possibleExcalibur);
-			itemManager.GetGenerator()->GenerateItemWithBase(possibleExcalibur);
-			itemManager.GetGenerator()->GenerateItemWithBase(possibleExcalibur);
-
-			// Add items in session to inventory.
-			for (auto item : itemManager.GetSessionItems()->Items()) {
-				itemManager.AddItemToInventoryBySessionId(item.second.SessionItemId());
-				Assert::AreEqual(true, itemManager.GetInventory()->HasItemWithSessionId(item.second.SessionItemId()));
+			auto inventory_id = itemManager.new_item_container(64);
+			unsigned int item_id;
+			for (int i = 0; i < 20; i++) {
+				item_id = itemManager.generate_item_with_base(possibleExcalibur);
+				itemManager.move_item_to_container(inventory_id, item_id);
+				Assert::AreEqual(true, itemManager.container_has_item(inventory_id, item_id));
 			}
 
-		} // End TEST_METHOD
+		} // End TEST_METHOD 
 
-		TEST_METHOD(Should_HaveItemInInventory_AfterAddingItems) {
-
+		TEST_METHOD(Should_HaveItemsInSecondContainer_WhenMovingItems) {
 			ItemManager itemManager = ItemManager();
 
 			std::string name = "Excalibur";
@@ -186,58 +173,21 @@ namespace itemtests
 			possibleStatsExcalibur.push_back(PossibleStat(possible_stat_2, 500, 750, 1));
 			ItemBase possibleExcalibur = ItemBase(name, possibleStatsExcalibur, slot);
 
-			itemManager.GetGenerator()->GenerateItemWithBase(possibleExcalibur);
-			itemManager.GetGenerator()->GenerateItemWithBase(possibleExcalibur);
-			itemManager.GetGenerator()->GenerateItemWithBase(possibleExcalibur);
-			itemManager.GetGenerator()->GenerateItemWithBase(possibleExcalibur);
-			itemManager.GetGenerator()->GenerateItemWithBase(possibleExcalibur);
-
-			// Add items in session to inventory.
-			for (auto item : itemManager.GetSessionItems()->Items())
-				itemManager.AddItemToInventoryBySessionId(item.second.SessionItemId());
-
-			// Check if item is in inventory.
-			for (auto item : itemManager.GetSessionItems()->Items())
-				Assert::AreEqual(true, itemManager.GetInventory()->HasItemWithSessionId(item.second.SessionItemId()));
-
-		} // End TEST_METHOD
-		
-		TEST_METHOD(Should_HaveEqualSessionIDKeyAndValueSessionID_WhenAddingItemsToInventory) {
-
-			ItemManager itemManager = ItemManager();
-
-			std::string name = "Excalibur";
-			std::string slot = "hand";
-			std::string possible_stat_1 = "strength";
-			std::string possible_stat_2 = "vitality";
-
-			auto possibleStatsExcalibur = List<PossibleStat>();
-			possibleStatsExcalibur.push_back(PossibleStat(possible_stat_1, 500, 750, 1));
-			possibleStatsExcalibur.push_back(PossibleStat(possible_stat_2, 500, 750, 1));
-			ItemBase possibleExcalibur = ItemBase(name, possibleStatsExcalibur, slot);
-
-			itemManager.GetGenerator()->GenerateItemWithBase(possibleExcalibur);
-			itemManager.GetGenerator()->GenerateItemWithBase(possibleExcalibur);
-			itemManager.GetGenerator()->GenerateItemWithBase(possibleExcalibur);
-			itemManager.GetGenerator()->GenerateItemWithBase(possibleExcalibur);
-			itemManager.GetGenerator()->GenerateItemWithBase(possibleExcalibur);
-
-
-			// Add items in session to inventory.
-			for (auto& item : itemManager.GetSessionItems()->Items()) {
-				itemManager.AddItemToInventoryBySessionId(item.second.SessionItemId());
-				Assert::AreEqual(true, itemManager.GetInventory()->HasItemWithSessionId(item.second.SessionItemId()));
+			auto inventory_id = itemManager.new_item_container(64);
+			unsigned int item_id;
+			for (int i = 0; i < 20; i++) {
+				item_id = itemManager.generate_item_with_base(possibleExcalibur);
+				itemManager.move_item_to_container(inventory_id, item_id);
 			}
 
-			// Check if the mapping is correct. pair with 1 as first should have second.SessionItemId() == 1.
-			for (auto item : itemManager.GetInventory()->Items()) {
-				unsigned int mapID = item.first;
-				unsigned int itemID = item.second->SessionItemId();
-				Assert::AreEqual(mapID, itemID);
+			auto stash_id = itemManager.new_item_container(128);
+
+			for (auto& item : itemManager.get_items_in_container(stash_id)) {
+				item_id = itemManager.move_item_to_container(stash_id, item->SessionItemId());
+				Assert::AreEqual(true, itemManager.container_has_item(stash_id, item_id));
 			}
-			
-			
-		} // End TEST_METHOD
+
+		}
 
 	};
 }

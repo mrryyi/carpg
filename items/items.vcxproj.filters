@@ -53,5 +53,8 @@
     <ClInclude Include="..\include\unique_id_generator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\printer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

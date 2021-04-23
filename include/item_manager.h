@@ -33,8 +33,18 @@ public:
 
     unsigned int new_item_container(unsigned int size) {
         unsigned int id = next_item_container_id();
-        _item_containers[id] = new ItemContainer(next_item_container_id(), 64);
+        _item_containers[id] = new ItemContainer(id, size);
         return id;
+    }
+
+    bool container_has_item(unsigned int container_id, unsigned int session_item_id) {
+        if (!container_exists(container_id))
+            return false;
+
+        if (!item_exists(session_item_id))
+            return false;
+
+        return _item_containers[container_id]->contains(session_item_id);
     }
 
     unsigned int container_that_contains_item(unsigned int session_item_id) {
@@ -58,30 +68,39 @@ public:
         return _session_items[session_item_id];
     }
 
-    std::vector<Item*>* get_items_in_container(unsigned int container_id) {
-        unsigned int amount_of_items = _item_containers[container_id]->get_current_amount_of_items();
-        unsigned int container_size = _item_containers[container_id]->get_size();
-        std::vector<Item*> items(amount_of_items);
-        std::vector<unsigned int> items_in_container = _item_containers[container_id]->get_items();
-        
-        unsigned int current_added_item_index = 0;
+    void get_items_in_container_whack(unsigned int container_id, std::vector<Item*>& found_items) {
 
-        for (unsigned int container_slot = 0; container_slot < container_size; container_slot++) {
-            if (items_in_container[container_slot] != 0) {
-                items[current_added_item_index] = _session_items[items_in_container[container_slot]];
-                current_added_item_index++;
-            }
+        if (container_exists(container_id)) {
+            std::vector<Item*> items_in_container;
+            ItemContainer* container = _item_containers[container_id];
+            found_items = container->get_only_items();
         }
+    }
 
-        return &items;
+    std::vector<Item*> get_items_in_container(unsigned int container_id) {
+        
+        if (container_exists(container_id)) {
+            std::vector<Item*> items_in_container;
+            ItemContainer* container = _item_containers[container_id];
+            return container->get_only_items();
+        }
     }
 
     bool switch_container(unsigned int from_container, unsigned int to_container, unsigned int session_item_id) {
+        debug_print("switch_container", "attempting to switch item " + _session_items[session_item_id]->Name() + " (SID=" + std::to_string(session_item_id) + ")"
+                                      + " from container " + std::to_string(from_container)
+                                      + " to " + std::to_string(to_container));
+
         if (_item_containers[from_container]->remove_item_by_item_session_id(session_item_id)) {
-            _item_containers[to_container]->add_item_first_available_slot(session_item_id);
+
+            debug_print("switch_container", "before adding item");
+
+            _item_containers[to_container]->add_item_first_available_slot(get_one_item(session_item_id));
+
+            debug_print("switch_container", "switched");
             return true;
         }
-        
+        debug_print("switch_container", "switching didn't happen");
         return false;
     }
 
@@ -99,16 +118,22 @@ public:
         if (_item_containers[to_item_container_id]->is_full())
             return false;
 
+        debug_print("move_item_to_container", "item exists, container exists, container isn't full.");
+
         unsigned int the_items_current_container = container_that_contains_item(session_item_id);
-        
+
         // The item has no current container! Feel free to add without switching.
         if (the_items_current_container == 0) {
-            _item_containers[to_item_container_id]->add_item_first_available_slot(session_item_id);
+            _item_containers[to_item_container_id]->add_item_first_available_slot(_session_items[session_item_id]);
         }
         else {
             // If there is a container that contains the item, then switch between them.
             switch_container(the_items_current_container, to_item_container_id, session_item_id);
         }
+        
+        debug_print("move_item_to_container", "item move is successful.");
+
+        return true;
     }
 
     // What is known about the item should also be its item base when we read it in.
@@ -147,6 +172,10 @@ public:
 
     bool item_exists(unsigned int session_item_id) {
         return _session_items.count(session_item_id) > 0;
+    }
+
+    std::map<unsigned int, Item*> get_session_items() {
+        return _session_items;
     }
 
 private:

@@ -152,6 +152,7 @@
     <ClInclude Include="..\include\itemcontainer.h" />
     <ClInclude Include="..\include\item_manager.h" />
     <ClInclude Include="..\include\preincludes.h" />
+    <ClInclude Include="..\include\printer.h" />
     <ClInclude Include="..\include\session_items.h" />
     <ClInclude Include="..\include\stat.h" />
     <ClInclude Include="..\include\structs.h" />

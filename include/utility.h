@@ -13,6 +13,6 @@
 
 void debug_print(std::string origin, std::string message) {
 #ifdef _DEBUG
-    std::cout << "[DEBUG] ORIGIN: " << origin << ", " << message << std::endl;
+    std::cout << "[DEBUG] ORIGIN: " << origin << " | " << message << std::endl;
 #endif
 }

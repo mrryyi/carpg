@@ -8,28 +8,36 @@ class ItemContainer {
 public:
 	ItemContainer(unsigned int id, unsigned int size) {
 		_id = id;
-		_items = std::vector<unsigned int>(size);
+		_size = size;
+		_items = std::vector<Item*>(size);
+		_amount_of_items = 0;
+		std::fill(_items.begin(), _items.end(), nullptr);
 	}
 
 	bool is_full() {
 		return _amount_of_items == _size - 1;
 	}
 
+	unsigned int get_id() {
+		return _id;
+	}
+
 	bool contains(unsigned int session_item_id) {
 		for (int i = 0; i < _size; i++ ) {
-			if (_items[i] == session_item_id)
-				return true;
-		}
+		    if (_items[i] != nullptr)
+			    if (_items[i]->SessionItemId() == session_item_id)
+				    return true;
+	    }
 
-		return false;
+	    return false;
 	}
 
 	// returns true if successful
-	bool add_item_first_available_slot(unsigned int session_item_id) {
-
+	bool add_item_first_available_slot(Item* item) {
 		for (int i = 0; i < _size; i++) {
-			if (_items[i] == 0) {
-				_items[i] = session_item_id;
+			if (_items[i] == nullptr) {
+				std::cout << "Adding to slot: " << i << std::endl;
+				_items[i] = item;
 				_amount_of_items += 1;
 				return true;
 			}
@@ -37,7 +45,6 @@ public:
 
         return false;
 	}
-
 
 	// returns true if successful
 	bool remove_item_by_slot(unsigned int slot) {
@@ -56,24 +63,44 @@ public:
 
 	// returns true if successful
 	bool remove_item_by_item_session_id(unsigned int session_item_id) {
+
 		for (int i = 0; i < _size; i++) {
-			if (_items[i] == session_item_id) {
-				remove_item(i);
-				return true;
+			if (_items[i] != nullptr) {
+				if (_items[i]->SessionItemId() == session_item_id) {
+					remove_item(i);
+					return true;
+				}
 			}
 		}
 
 		return false;
 	}
 
-	std::vector<unsigned int> get_items() const { return _items; };
+	std::vector<Item*> get_container_with_empty_slots() { return _items; };
+	std::vector<Item*> get_only_items() {
+
+
+		std::vector<Item*> items_in_container(_amount_of_items);
+		items_in_container = _items;
+		
+		items_in_container.erase(
+							  std::remove_if(items_in_container.begin()
+									        ,items_in_container.end()
+								            ,[](const Item* item) {return item == nullptr; })
+			                  ,items_in_container.end());
+
+		std::cout << "items_in_container size: " << items_in_container.size() << std::endl;
+		debug_print("get_only_items", "before return");
+		return items_in_container;
+	};
+
 	unsigned int get_size() const { return _size; };
 	unsigned int get_current_amount_of_items() const { return _amount_of_items; };
 
 private:
 
 	void remove_item(unsigned int slot) {
-		_items[slot] = 0;
+		_items[slot] = nullptr;
 		_amount_of_items -= 1;
 	}
 
@@ -85,7 +112,7 @@ private:
 		return _items[slot] != 0;
 	}
 
-	std::vector<unsigned int> _items;
+	std::vector<Item*> _items;
 
 	unsigned int _id;
 	unsigned int _size;
