@@ -1,5 +1,4 @@
 #pragma once
-#pragma once
 
 unsigned int next_item_container_id() {
 	static unsigned int current_item_container_id = 0;

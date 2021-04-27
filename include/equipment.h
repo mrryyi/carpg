@@ -114,12 +114,12 @@ public:
         if (_slots.count(slot) < 1)
             return false;
 
-        // if the item slot is a specific slot, for example "righthand" or "leftwrist"
-        if (slot == item_to_add->Slot()) {
+        // if the item slot is a specific slot, for example "righthand" or "leftwrist".
+        // or, more commonly, "legs" or "waist".
+        if (slot == item_to_add->Slot())
             return true;
-        }
 
-        // Check every slot possible for the overarching slot.
+        // Check every specific slot for the slot of the item.
         for (const auto& specificSlot : _slotMappings[item_to_add->Slot()]) {
 
             if (specificSlot == slot) {

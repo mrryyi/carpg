@@ -79,7 +79,6 @@ public:
 	std::vector<Item*> get_container_with_empty_slots() { return _items; };
 	std::vector<Item*> get_only_items() {
 
-
 		std::vector<Item*> items_in_container(_amount_of_items);
 		items_in_container = _items;
 		
@@ -88,9 +87,6 @@ public:
 									        ,items_in_container.end()
 								            ,[](const Item* item) {return item == nullptr; })
 			                  ,items_in_container.end());
-
-		std::cout << "items_in_container size: " << items_in_container.size() << std::endl;
-		debug_print("get_only_items", "before return");
 		return items_in_container;
 	};
 

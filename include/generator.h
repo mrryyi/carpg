@@ -6,8 +6,6 @@ Generates numbers and stats
 double random_number_within_range_with_step(double rangeMin, double rangeMax, double step)
 {
     if (rangeMax < rangeMin) {
-        std::string error_message = "RandomNumberWithinRangeWithStep ERROR:";
-        error_message += "Max range: " + std::to_string(rangeMin) + " above min range." + std::to_string(rangeMin);
         debug_print("RandomNumberWithinRangeWithStep",
             "Max < min mismatch, min = " + std::to_string(rangeMin) +
             ", max = " + std::to_string(rangeMax));

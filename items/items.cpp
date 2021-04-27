@@ -14,7 +14,7 @@ int main() {
 	ItemBase possibleExcalibur = ItemBase(name, possibleStatsExcalibur, slot);
 
 	auto inventory_id = itemManager.new_item_container(24);
-	auto stash_id = itemManager.new_item_container(127);
+	auto stash_id = itemManager.new_item_container(24);
 
 	std::cout << "inventory_id: " << inventory_id << std::endl;
 	std::cout << "stash_id: " << stash_id << std::endl;
