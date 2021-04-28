@@ -1,6 +1,7 @@
 #include "preincludes.h"
 
 int main() {
+
 	ItemManager itemManager = ItemManager();
 
 	std::string name = "Excalibur";
@@ -8,9 +9,9 @@ int main() {
 	std::string possible_stat_1 = "strength";
 	std::string possible_stat_2 = "vitality";
 
-	auto possibleStatsExcalibur = List<PossibleStat>();
-	possibleStatsExcalibur.push_back(PossibleStat(possible_stat_1, 500, 750, 1));
-	possibleStatsExcalibur.push_back(PossibleStat(possible_stat_2, 500, 750, 1));
+	auto possibleStatsExcalibur = List<StatPossibility>();
+	possibleStatsExcalibur.push_back(StatPossibility(possible_stat_1, 500, 750, 1));
+	possibleStatsExcalibur.push_back(StatPossibility(possible_stat_2, 500, 750, 1));
 	ItemBase possibleExcalibur = ItemBase(name, possibleStatsExcalibur, slot);
 
 	auto inventory_id = itemManager.new_item_container(24);

@@ -12,7 +12,6 @@ Implement stash
 * Should be able to move items between item containers
 ** Perhaps just have a list of existing item containers, have them be of the inventory class, but call them "ExistingItemContainers", maybe.
 ** functionality to equip and unequip should still work if they are of the inventory class.
-* T
 Implement slots
 */
 class ItemManager
@@ -146,7 +145,7 @@ public:
         return next_session_id;
     }
 
-    unsigned int generate_item(std::string name, std::vector<PossibleStat> possibleStats, std::string slot) {
+    unsigned int generate_item(std::string name, std::vector<StatPossibility> possibleStats, std::string slot) {
         ItemBase itemBase = ItemBase(name, possibleStats, slot);
         return generate_item_with_base(itemBase);
     }
@@ -155,7 +154,7 @@ public:
 
         std::vector<Stat> generatedStats = std::vector<Stat>();
 
-        for (PossibleStat possibleStat : itemBase.PossibleStats())
+        for (StatPossibility possibleStat : itemBase.PossibleStats())
             generatedStats.push_back(generate_stat(possibleStat));
 
         unsigned int current_session_id = next_session_item_id();

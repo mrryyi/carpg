@@ -25,7 +25,7 @@ double random_number_within_range_with_step(double rangeMin, double rangeMax, do
     return generatedNumber;
 }
 
-Stat generate_stat(PossibleStat possibleStat)
+Stat generate_stat(StatPossibility possibleStat)
 {
     auto generatedNumber = random_number_within_range_with_step(possibleStat.RangeMin(),
         possibleStat.RangeMax(),

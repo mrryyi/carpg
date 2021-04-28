@@ -41,10 +41,10 @@ private:
 //    501.5
 //    502
 
-class PossibleStat {
+class StatPossibility {
 
 public:
-    PossibleStat(std::string Name, double RangeMin, double RangeMax, double Step)
+    StatPossibility(std::string Name, double RangeMin, double RangeMax, double Step)
     {
         _name = Name;
         _rangeMin = RangeMin;

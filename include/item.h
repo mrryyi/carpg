@@ -11,18 +11,18 @@
 class ItemBase
 {
 public:
-    ItemBase(std::string Name, List<PossibleStat> PossibleStats, std::string Slot)
+    ItemBase(std::string Name, List<StatPossibility> PossibleStats, std::string Slot)
     {
         _name = Name;
         copy(PossibleStats.begin(), PossibleStats.end(), std::back_inserter(_possibleStats));
         _slot = Slot;
     }
 
-    List<PossibleStat> PossibleStats() const { return _possibleStats; }
+    List<StatPossibility> PossibleStats() const { return _possibleStats; }
     std::string Name() const { return _name; }
     std::string Slot() const { return _slot; }
 private:
-    List<PossibleStat> _possibleStats;
+    List<StatPossibility> _possibleStats;
     std::string _name;
     std::string _slot;
 

@@ -22,9 +22,9 @@ namespace itemtests
 			std::string possible_stat_1 = "strength";
 			std::string possible_stat_2 = "vitality";
 
-			auto possibleStatsExcalibur = List<PossibleStat>();
-			possibleStatsExcalibur.push_back(PossibleStat(possible_stat_1, 500, 750, 1));
-			possibleStatsExcalibur.push_back(PossibleStat(possible_stat_2, 500, 750, 1));
+			auto possibleStatsExcalibur = List<StatPossibility>();
+			possibleStatsExcalibur.push_back(StatPossibility(possible_stat_1, 500, 750, 1));
+			possibleStatsExcalibur.push_back(StatPossibility(possible_stat_2, 500, 750, 1));
 			auto possibleExcalibur = ItemBase(name, possibleStatsExcalibur, slot);
 
 			unsigned int session_item_id = itemManager.generate_item_with_base(possibleExcalibur);
@@ -92,9 +92,9 @@ namespace itemtests
 			std::string possible_stat_1 = "strength";
 			std::string possible_stat_2 = "vitality";
 
-			auto possibleStatsExcalibur = List<PossibleStat>();
-			possibleStatsExcalibur.push_back(PossibleStat(possible_stat_1, 500, 750, 1));
-			possibleStatsExcalibur.push_back(PossibleStat(possible_stat_2, 500, 750, 1));
+			auto possibleStatsExcalibur = List<StatPossibility>();
+			possibleStatsExcalibur.push_back(StatPossibility(possible_stat_1, 500, 750, 1));
+			possibleStatsExcalibur.push_back(StatPossibility(possible_stat_2, 500, 750, 1));
 			ItemBase possibleExcalibur = ItemBase(name, possibleStatsExcalibur, slot);
 
 			unsigned int last_id = itemManager.generate_item_with_base(possibleExcalibur);
@@ -118,9 +118,9 @@ namespace itemtests
 			std::string possible_stat_1 = "strength";
 			std::string possible_stat_2 = "vitality";
 
-			auto possibleStatsExcalibur = List<PossibleStat>();
-			possibleStatsExcalibur.push_back(PossibleStat(possible_stat_1, 500, 750, 1));
-			possibleStatsExcalibur.push_back(PossibleStat(possible_stat_2, 500, 750, 1));
+			auto possibleStatsExcalibur = List<StatPossibility>();
+			possibleStatsExcalibur.push_back(StatPossibility(possible_stat_1, 500, 750, 1));
+			possibleStatsExcalibur.push_back(StatPossibility(possible_stat_2, 500, 750, 1));
 			ItemBase possibleExcalibur = ItemBase(name, possibleStatsExcalibur, slot);
 
 			itemManager.generate_item_with_base(possibleExcalibur);
@@ -145,9 +145,9 @@ namespace itemtests
 			std::string possible_stat_1 = "strength";
 			std::string possible_stat_2 = "vitality";
 
-			auto possibleStatsExcalibur = List<PossibleStat>();
-			possibleStatsExcalibur.push_back(PossibleStat(possible_stat_1, 500, 750, 1));
-			possibleStatsExcalibur.push_back(PossibleStat(possible_stat_2, 500, 750, 1));
+			auto possibleStatsExcalibur = List<StatPossibility>();
+			possibleStatsExcalibur.push_back(StatPossibility(possible_stat_1, 500, 750, 1));
+			possibleStatsExcalibur.push_back(StatPossibility(possible_stat_2, 500, 750, 1));
 			ItemBase possibleExcalibur = ItemBase(name, possibleStatsExcalibur, slot);
 
 			auto inventory_id = itemManager.new_item_container(64);
@@ -168,9 +168,9 @@ namespace itemtests
 			std::string possible_stat_1 = "strength";
 			std::string possible_stat_2 = "vitality";
 
-			auto possibleStatsExcalibur = List<PossibleStat>();
-			possibleStatsExcalibur.push_back(PossibleStat(possible_stat_1, 500, 750, 1));
-			possibleStatsExcalibur.push_back(PossibleStat(possible_stat_2, 500, 750, 1));
+			auto possibleStatsExcalibur = List<StatPossibility>();
+			possibleStatsExcalibur.push_back(StatPossibility(possible_stat_1, 500, 750, 1));
+			possibleStatsExcalibur.push_back(StatPossibility(possible_stat_2, 500, 750, 1));
 			ItemBase possibleExcalibur = ItemBase(name, possibleStatsExcalibur, slot);
 
 			auto inventory_id = itemManager.new_item_container(64);
