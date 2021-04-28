@@ -20,6 +20,7 @@ public:
     ItemManager() {
         _item_containers = std::map<unsigned int, ItemContainer*>();
         _session_items = std::map<unsigned int, Item*>();
+        _generator = Generator();
     }
 
     ~ItemManager() {
@@ -79,7 +80,6 @@ public:
     std::vector<Item*> get_items_in_container(unsigned int container_id) {
         
         if (container_exists(container_id)) {
-            std::vector<Item*> items_in_container;
             ItemContainer* container = _item_containers[container_id];
             return container->get_only_items();
         }
@@ -165,6 +165,10 @@ public:
         return current_session_id;
     }
 
+    unsigned int generate_random_item() {
+        return generate_item_with_base(*_generator.generate_item_base());
+    }
+
     bool container_exists(unsigned int item_container_id) {
         return _item_containers.count(item_container_id) > 0;
     }
@@ -181,4 +185,5 @@ private:
 
     std::map<unsigned int, ItemContainer*> _item_containers;
     std::map<unsigned int, Item*> _session_items;
+    Generator _generator;
 };

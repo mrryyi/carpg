@@ -2,6 +2,8 @@
 
 int main() {
 
+	srand(time(NULL));
+
 	ItemManager itemManager = ItemManager();
 
 	std::string name = "Excalibur";
@@ -20,10 +22,14 @@ int main() {
 	std::cout << "inventory_id: " << inventory_id << std::endl;
 	std::cout << "stash_id: " << stash_id << std::endl;
 
-
 	unsigned int item_id;
 	for (int i = 0; i < 10; i++) {
 		item_id = itemManager.generate_item_with_base(possibleExcalibur);
+		itemManager.move_item_to_container(inventory_id, item_id);
+	}
+
+	for (int i = 0; i < 10; i++) {
+		item_id = itemManager.generate_random_item();
 		itemManager.move_item_to_container(inventory_id, item_id);
 	}
 
@@ -35,6 +41,7 @@ int main() {
 
 	print_item_container(itemManager.get_container(inventory_id));
 	print_item_container(itemManager.get_container(stash_id));
+	print_items_in_container(itemManager.get_container(stash_id));
 }
 
 /*

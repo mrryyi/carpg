@@ -99,7 +99,6 @@ namespace itemtests
 
 			unsigned int last_id = itemManager.generate_item_with_base(possibleExcalibur);
 			unsigned int session_item_id;
-			unsigned int i = 0;
 
 			for (int i = 0; i < 100; i++) {
 				session_item_id = itemManager.generate_item_with_base(possibleExcalibur);
